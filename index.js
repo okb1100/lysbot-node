@@ -2,12 +2,12 @@ var request = require('request');
 var cheerio = require('cheerio');
 
 // ne kadar süre ile kontrol edileceği (saniye)
-var checkInterval = 60;
+var checkInterval = 1;
 // Hangi urlden kontrol edileceği
 // (Değiştirmek lüzumsuz)
-var urlToCheck = "https://sonuc.osym.gov.tr";
+var urlToCheck = "https://sonuc.osym.gov.tr/SonucSec.aspx";
 // Varlığı kontrol edilecek yazı regex olarak tanımlanıyor
-var regexpToCheck = new RegExp('ÖSYS', 'mgui');
+var regexpToCheck = new RegExp(process.argv[2], 'mgui');
 
 // tekrar edecek fonksiyon setInterval fonksiyonuna ilk parametre olarak girilir
 setInterval(function(){
@@ -15,24 +15,26 @@ setInterval(function(){
     request(urlToCheck,{encoding: 'utf8', gzip: true}, function(err, res, html){
         // hata varsa yazdır
         if(err) console.error(err);
-        
-        // dönen html dosyası cheerio kütüphanesi ile
-        // kolayca manipüle edilebilir hale getiriliyor
-        var $ = cheerio.load(html);
-
-        // içeriği kontrol edilecek tablo hücresi tanımlanıyor
-        cellToCheck = $('table#grdSonuclar>tbody').children('tr').eq(1)
-            .children('td').eq(0);
-
-        // hücre içeriği kontrol ediliyor
-        if(regexpToCheck.test(cellToCheck.text())){
-            //Açıklandığında yapılacaklar
-            console.log("AÇIKLANDI")
-            process.exit(0);
-        }
         else{
-            //Açıklanmadığında yapılacaklar
-            console.log("Henüz açıklanmadı");
+            // dönen html dosyası cheerio kütüphanesi ile
+            // kolayca manipüle edilebilir hale getiriliyor
+            var $ = cheerio.load(html);
+
+            // içeriği kontrol edilecek tablo hücresi tanımlanıyor
+            cellToCheck = $('table#grdSonuclar>tbody').children('tr').eq(1)
+                .children('td').eq(0);
+
+            // hücre içeriği kontrol ediliyor
+            if(regexpToCheck.test(cellToCheck.text())){
+                //Açıklandığında yapılacaklar
+                console.log("AÇIKLANDI")
+                process.exit(0);
+            }
+            else{
+                //Açıklanmadığında yapılacaklar
+                console.log("Henüz açıklanmadı");
+            }
         }
+        
     });
 }, checkInterval * 1000);

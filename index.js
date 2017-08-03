@@ -12,8 +12,14 @@ else{
 // Hangi urlden kontrol edileceği
 // (Değiştirmek lüzumsuz)
 var urlToCheck = "https://sonuc.osym.gov.tr/SonucSec.aspx";
+
 // Varlığı kontrol edilecek yazı regex olarak tanımlanıyor
-var regexpToCheck = new RegExp(process.argv[2], 'mgui');
+if(process.argv[2]){
+    var regexpToCheck = new RegExp(process.argv[2], 'mgui');
+}
+else{
+    var regexpToCheck = new RegExp('ÖSYS', 'mgui');
+}
 
 // tekrar edecek fonksiyon setInterval fonksiyonuna ilk parametre olarak girilir
 setInterval(function(){
